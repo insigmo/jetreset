@@ -24,4 +24,4 @@ if [ "$OS" = "darwin" ]; then
   echo "Quarantine attribute removed (macOS)"
 fi
 
-echo "Done: ./jetreset"
+echo 'Run exec file for reseting: ./jetreset'

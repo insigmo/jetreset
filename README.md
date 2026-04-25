@@ -20,7 +20,7 @@ Download the latest pre-built binary for your platform from the [Releases](https
 
 ```bash
 # Download and run installer
-curl -fsSL https://raw.githubusercontent.com/insigmo/jetreset/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/insigmo/jetreset/refs/heads/master/install.sh | bash
 
 # Run
 ./jetreset # Run without flags to reset all detected JetBrains IDEs
