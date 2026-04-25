@@ -20,9 +20,9 @@ jobs:
             goarch: amd64
           - goos: linux
             goarch: arm64
-          - goos: macos
+          - goos: darwin
             goarch: amd64
-          - goos: macos
+          - goos: darwin
             goarch: arm64
           - goos: windows
             goarch: amd64
