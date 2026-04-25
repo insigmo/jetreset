@@ -27,7 +27,7 @@ func main() {
 		return
 	}
 	if len(os.Args) > 1 && os.Args[1] == "--run-schedule" {
-		fmt.Println("📅 Scheduler started. Trial will be reset automatically every month.")
+		fmt.Println("📅 Scheduler started. Trial will be reset automatically every month. Check via `crontab -l`")
 		scheduler.Schedule(processName)
 		return
 	}
