@@ -16,15 +16,6 @@ Supports **IntelliJ IDEA**, **GoLand**, **PyCharm**, **WebStorm**, **CLion**, **
 
 Download the latest pre-built binary for your platform from the [Releases](https://github.com/insigmo/jetreset/releases/latest) page:
 
-| Platform | Architecture | File                         |
-|----------|--------------|------------------------------|
-| Linux    | amd64        | `jetreset-linux-amd64`       |
-| Linux    | arm64        | `jetreset-linux-arm64`       |
-| macOS    | amd64        | `jetreset-darwin-amd64`      |
-| macOS    | arm64 (M1+)  | `jetreset-darwin-arm64`      |
-| Windows  | amd64        | `jetreset-windows-amd64.exe` |
-| Windows  | arm64        | `jetreset-windows-arm64.exe` |
-
 #### Linux / macOS
 
 ```bash
@@ -61,37 +52,11 @@ go build -ldflags="-s -w" -trimpath -o jetreset .
 ## Usage
 
 ```bash
-jetreset [flags]
+./jetreset # Run without flags to reset all detected JetBrains IDEs
+
+./jetreset --run-schedule # Run scheduler for reseting every month
+./jetreset --stop         # Stop schedurler
 ```
-
-Run without flags to reset all detected JetBrains IDEs interactively. And se
-
-### Flags
-
-| Flag             | Description                             |
-|------------------|-----------------------------------------|
-| `--run-schedule` | Run schedurler for reseting every month |
-| `--stop`         | Stop schedurler                         |
-
----
-
-## How it works
-
-`jetreset` removes the evaluation-related files that JetBrains IDEs use to track the trial period. Specifically, it clears:
-
-- `eval/` folder inside the IDE config directory (contains the trial license key)
-- `options/other.xml` — stores the trial start date reference
-- On Windows: relevant entries under `HKEY_CURRENT_USER\Software\JavaSoft` and the `%APPDATA%\JetBrains` folder
-
-Config directories by platform:
-
-| Platform | Path                                      |
-|----------|-------------------------------------------|
-| Linux    | `~/.config/JetBrains/<IDE><version>/`     |
-| macOS    | `~/Library/Application Support/JetBrains/<IDE><version>/` |
-| Windows  | `%APPDATA%\JetBrains\<IDE><version>\`     |
-
-Personal settings, plugins, keymaps, and code style configurations are **not affected**.
 
 ---
 
