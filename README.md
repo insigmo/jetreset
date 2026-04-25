@@ -1,7 +1,7 @@
 # Jetreset
 
 [![Release](https://img.shields.io/github/v/release/insigmo/jetreset?style=flat-square)](https://github.com/insigmo/jetreset/releases/latest)
-[![Go](https://img.shields.io/badge/Go-1.26+-00ADD8?style=flat-square&logo=go)](https://go.dev)
+[![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?style=flat-square&logo=go)](https://go.dev)
 
 
 A cross-platform CLI tool written in Go for resetting the trial period of JetBrains IDEs.
@@ -48,7 +48,7 @@ Download `jetreset-windows-amd64.exe` and run it directly or via PowerShell:
 
 ### Build from source
 
-Requires Go 1.21+.
+Requires Go 1.22+.
 
 ```bash
 git clone https://github.com/insigmo/jetreset.git
