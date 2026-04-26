@@ -13,7 +13,7 @@ func Reset(home string, products []string) {
 	case "linux":
 		resetLinux(home, products)
 	case "windows":
-		resetWindows(home, products)
+		resetWindows(home)
 	default:
 		fmt.Fprintln(os.Stderr, "Unsupported OS")
 		os.Exit(1)

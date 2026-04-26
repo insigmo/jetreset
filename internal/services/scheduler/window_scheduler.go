@@ -25,5 +25,4 @@ func startWindowsScheduler(e string) {
 func stopWindowsScheduler() {
 	exec.Command("schtasks", "/delete", "/tn", appName, "/f").Run()
 	fmt.Println("Task Scheduler entry removed.")
-
 }
