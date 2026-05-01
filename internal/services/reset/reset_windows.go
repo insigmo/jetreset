@@ -7,9 +7,9 @@ import (
 	"path/filepath"
 )
 
-func resetWindows(h string) {
-	os.RemoveAll(filepath.Join(h, "AppData", "Roaming", "JetBrains"))
-	os.RemoveAll(filepath.Join(h, "AppData", "Local", "JetBrains"))
+func Reset(home string, products []string) {
+	os.RemoveAll(filepath.Join(home, "AppData", "Roaming", "JetBrains"))
+	os.RemoveAll(filepath.Join(home, "AppData", "Local", "JetBrains"))
 	cleanRegistry()
 }
 

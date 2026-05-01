@@ -1,3 +1,5 @@
+//go:build darwin || linux
+
 package scheduler
 
 import (
@@ -8,13 +10,13 @@ import (
 	"strings"
 )
 
-func startCron(e string) {
+func Schedule(processName string) {
 	out, _ := exec.Command("crontab", "-l").Output()
-	if strings.Contains(string(out), e) {
+	if strings.Contains(string(out), processName) {
 		fmt.Println("Already in crontab, skipping.")
 		return
 	}
-	entry := strings.TrimRight(string(out), "\n") + "\n@monthly " + e + "\n"
+	entry := strings.TrimRight(string(out), "\n") + "\n@monthly " + processName + "\n"
 	cmd := exec.Command("crontab", "-")
 	cmd.Stdin = strings.NewReader(entry)
 	if err := cmd.Run(); err != nil {
@@ -22,15 +24,15 @@ func startCron(e string) {
 		return
 	}
 	fmt.Println("Scheduled: crontab @monthly")
-
 }
 
-func stopCron(processName string) {
+func Unschedule(processName string) {
 	out, err := exec.Command("crontab", "-l").Output()
 	if err != nil {
 		fmt.Println("No crontab found.")
 		return
 	}
+
 	var lines []string
 	sc := bufio.NewScanner(strings.NewReader(string(out)))
 	for sc.Scan() {
@@ -42,5 +44,4 @@ func stopCron(processName string) {
 	cmd.Stdin = strings.NewReader(strings.Join(lines, "\n") + "\n")
 	cmd.Run()
 	fmt.Println("Removed from crontab.")
-
 }
