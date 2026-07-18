@@ -27,7 +27,7 @@ func Running() []Proc {
 }
 
 func kill(p Proc, sig syscall.Signal) error {
-	logx.Tracef("signal %d to pid=%d (%s)", sig, p.PID, p.Product)
+	logx.Debugf("signal %d to pid=%d (%s)", sig, p.PID, p.Product)
 	err := syscall.Kill(p.PID, sig)
 	if errors.Is(err, syscall.ESRCH) {
 		return nil
@@ -62,11 +62,11 @@ func Relaunch(p Proc) error {
 	name := MacAppName(p.Product)
 	err := exec.CommandContext(context.Background(), "open", "-a", name).Start() //nolint:gosec // G204: launching the IDE is intended
 	if err == nil {
-		logx.Tracef("relaunch %s via open -a %q", p.Product, name)
+		logx.Debugf("relaunch %s via open -a %q", p.Product, name)
 		return nil
 	}
 	if m, _ := filepath.Glob(filepath.Join("/Applications", name+"*.app")); len(m) > 0 {
-		logx.Tracef("relaunch %s via open %s", p.Product, m[0])
+		logx.Debugf("relaunch %s via open %s", p.Product, m[0])
 		return exec.CommandContext(context.Background(), "open", m[0]).Start() //nolint:gosec // G204: launching the IDE is intended
 	}
 	return fmt.Errorf("%w: %s", ErrNoLauncher, p.Product)

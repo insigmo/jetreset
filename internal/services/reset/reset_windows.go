@@ -12,7 +12,7 @@ import (
 
 // Reset wipes JetBrains trial state for the given products on Windows.
 func Reset(home string, products []string) {
-	logx.Trace("reset: AppData + registry")
+	logx.Debugf("reset: AppData + registry")
 	_ = os.RemoveAll(filepath.Join(home, "AppData", "Roaming", "JetBrains"))
 	_ = os.RemoveAll(filepath.Join(home, "AppData", "Local", "JetBrains"))
 	cleanRegistry()
@@ -23,6 +23,6 @@ func cleanRegistry() {
 	if err == nil {
 		fmt.Println("🧹 Registry: cleaned")
 	} else {
-		logx.Trace("registry: nothing to clean")
+		logx.Debugf("registry: nothing to clean")
 	}
 }

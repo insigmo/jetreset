@@ -32,7 +32,7 @@ func taskkill(p Proc, force bool) error {
 	if force {
 		args = append(args, "/F")
 	}
-	logx.Tracef("taskkill %v (%s)", args, p.Product)
+	logx.Debugf("taskkill %v (%s)", args, p.Product)
 	return exec.CommandContext(context.Background(), "taskkill", args...).Run() //nolint:gosec // G204: terminating the IDE is intended
 }
 
@@ -69,14 +69,14 @@ func Relaunch(p Proc) error {
 	} {
 		m, _ := filepath.Glob(g)
 		if len(m) > 0 {
-			logx.Tracef("relaunch %s via start %s", p.Product, m[0])
+			logx.Debugf("relaunch %s via start %s", p.Product, m[0])
 			return exec.CommandContext(context.Background(), "cmd", "/c", "start", "", m[0]).Start() //nolint:gosec // G204: launching the IDE is intended
 		}
 	}
 	if exe := config.ProductExe[p.Product]; exe != "" {
 		path, err := exec.LookPath(exe)
 		if err == nil {
-			logx.Tracef("relaunch %s via %s", p.Product, path)
+			logx.Debugf("relaunch %s via %s", p.Product, path)
 			return exec.CommandContext(context.Background(), path).Start() //nolint:gosec // G204: launching the IDE is intended
 		}
 		for _, c := range winInstallCandidates(p.Product, exe) {
@@ -84,7 +84,7 @@ func Relaunch(p Proc) error {
 			if statErr != nil {
 				continue
 			}
-			logx.Tracef("relaunch %s via %s", p.Product, c)
+			logx.Debugf("relaunch %s via %s", p.Product, c)
 			return exec.CommandContext(context.Background(), c).Start() //nolint:gosec // G204: launching the IDE is intended
 		}
 	}
