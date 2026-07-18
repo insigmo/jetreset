@@ -3,7 +3,7 @@ name: Release
 on:
   workflow_dispatch:
   push:
-    branches: ["**"]
+    branches: [ "**" ]
     tags:
       - 'v*.*.*'
   pull_request:
@@ -12,13 +12,25 @@ permissions:
   contents: write
 
 jobs:
+  golangci:
+    name: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-go@v6
+        with:
+          go-version: stable
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v9
+        with:
+          version: v2.12
   test:
     name: Test · ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
