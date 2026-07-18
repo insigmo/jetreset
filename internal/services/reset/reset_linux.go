@@ -3,19 +3,22 @@ package reset
 import (
 	"path/filepath"
 	"regexp"
+
+	"github.com/insigmo/jetreset/internal/logx"
 )
 
 var (
-	reJBUserIdOnMachine = regexp.MustCompile(`<entry key="JetBrains\.UserIdOnMachine"`)
-	reDeviceId          = regexp.MustCompile(`<entry key="device_id"`)
-	reUserIdOnMachine   = regexp.MustCompile(`<entry key="user_id_on_machine"`)
+	reJBUserIDOnMachine = regexp.MustCompile(`<entry key="JetBrains\.UserIdOnMachine"`)
+	reDeviceID          = regexp.MustCompile(`<entry key="device_id"`)
+	reUserIDOnMachine   = regexp.MustCompile(`<entry key="user_id_on_machine"`)
 )
 
+// Reset wipes JetBrains trial state for the given products on Linux.
 func Reset(home string, products []string) {
-	cleanDir(filepath.Join(home, ".config", "JetBrains"), products)
+	logx.Debugf("reset: ~/.config/JetBrains + Java prefs")
+	CleanDir(filepath.Join(home, ".config", "JetBrains"), products)
 	jprefs := filepath.Join(home, ".java", ".userPrefs")
-
-	removeLine(filepath.Join(jprefs, "prefs.xml"), reJBUserIdOnMachine)
-	removeLine(filepath.Join(jprefs, "jetbrains", "prefs.xml"), reDeviceId)
-	removeLine(filepath.Join(jprefs, "jetbrains", "prefs.xml"), reUserIdOnMachine)
+	RemoveLine(filepath.Join(jprefs, "prefs.xml"), reJBUserIDOnMachine)
+	RemoveLine(filepath.Join(jprefs, "jetbrains", "prefs.xml"), reDeviceID)
+	RemoveLine(filepath.Join(jprefs, "jetbrains", "prefs.xml"), reUserIDOnMachine)
 }

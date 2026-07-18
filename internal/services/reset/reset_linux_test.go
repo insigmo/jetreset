@@ -1,36 +1,36 @@
-package reset
+package reset_test
 
 import (
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/insigmo/jetreset/internal/services/reset"
 )
 
 func TestResetLinux(t *testing.T) {
 	home := t.TempDir()
 	products := []string{"IntelliJIdea", "GoLand"}
 
-	// ~/.config/JetBrains/<Product><version>/eval/
 	jbConfig := filepath.Join(home, ".config", "JetBrains")
 	for _, name := range []string{"IntelliJIdea2024.1", "GoLand2023.3"} {
-		os.MkdirAll(filepath.Join(jbConfig, name, "eval"), 0755)
+		_ = os.MkdirAll(filepath.Join(jbConfig, name, "eval"), 0o755)
 	}
 
-	// ~/.java/.userPrefs/prefs.xml
 	jprefs := filepath.Join(home, ".java", ".userPrefs")
-	os.MkdirAll(filepath.Join(jprefs, "jetbrains"), 0755)
+	_ = os.MkdirAll(filepath.Join(jprefs, "jetbrains"), 0o755)
 
-	os.WriteFile(filepath.Join(jprefs, "prefs.xml"), []byte(strings.Join([]string{
+	_ = os.WriteFile(filepath.Join(jprefs, "prefs.xml"), []byte(strings.Join([]string{
 		`<?xml version="1.0" encoding="UTF-8" standalone="no"?>`,
 		`<!DOCTYPE map SYSTEM "http://java.sun.com/dtd/preferences.dtd">`,
 		`<map MAP_XML_VERSION="1.0">`,
 		`  <entry key="JetBrains.UserIdOnMachine" value="abc-uuid-123"/>`,
 		`  <entry key="other.key" value="keep"/>`,
 		`</map>`,
-	}, "\n")), 0644)
+	}, "\n")), 0o644)
 
-	os.WriteFile(filepath.Join(jprefs, "jetbrains", "prefs.xml"), []byte(strings.Join([]string{
+	_ = os.WriteFile(filepath.Join(jprefs, "jetbrains", "prefs.xml"), []byte(strings.Join([]string{
 		`<?xml version="1.0" encoding="UTF-8" standalone="no"?>`,
 		`<!DOCTYPE map SYSTEM "http://java.sun.com/dtd/preferences.dtd">`,
 		`<map MAP_XML_VERSION="1.0">`,
@@ -38,14 +38,15 @@ func TestResetLinux(t *testing.T) {
 		`  <entry key="user_id_on_machine" value="uid-789"/>`,
 		`  <entry key="other.key" value="keep"/>`,
 		`</map>`,
-	}, "\n")), 0644)
+	}, "\n")), 0o644)
 
-	Reset(home, products)
+	reset.Reset(home, products)
 
 	t.Run("removes eval directories", func(t *testing.T) {
 		for _, name := range []string{"IntelliJIdea2024.1", "GoLand2023.3"} {
 			evalDir := filepath.Join(jbConfig, name, "eval")
-			if _, err := os.Stat(evalDir); !os.IsNotExist(err) {
+			_, err := os.Stat(evalDir)
+			if !os.IsNotExist(err) {
 				t.Errorf("%s/eval should be removed", name)
 			}
 		}
@@ -76,6 +77,5 @@ func TestResetLinux(t *testing.T) {
 }
 
 func TestResetLinuxMissingDirs(t *testing.T) {
-	// Reset on an empty home directory must not crash
-	Reset(t.TempDir(), []string{"IntelliJIdea", "GoLand"})
+	reset.Reset(t.TempDir(), []string{"IntelliJIdea", "GoLand"})
 }

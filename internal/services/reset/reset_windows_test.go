@@ -1,11 +1,13 @@
 //go:build windows
 
-package reset
+package reset_test
 
 import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	"github.com/insigmo/jetreset/internal/services/reset"
 )
 
 func TestResetWindows(t *testing.T) {
@@ -14,26 +16,26 @@ func TestResetWindows(t *testing.T) {
 
 	roaming := filepath.Join(home, "AppData", "Roaming", "JetBrains")
 	local := filepath.Join(home, "AppData", "Local", "JetBrains")
-	os.MkdirAll(roaming, 0755)
-	os.MkdirAll(local, 0755)
+	os.MkdirAll(roaming, 0o755)
+	os.MkdirAll(local, 0o755)
 
-	Reset(home, products)
+	reset.Reset(home, products)
 
 	t.Run("removes AppData/Roaming/JetBrains", func(t *testing.T) {
-		if _, err := os.Stat(roaming); !os.IsNotExist(err) {
+		_, err := os.Stat(roaming)
+		if !os.IsNotExist(err) {
 			t.Error("AppData/Roaming/JetBrains should be removed")
 		}
 	})
 
 	t.Run("removes AppData/Local/JetBrains", func(t *testing.T) {
-		if _, err := os.Stat(local); !os.IsNotExist(err) {
+		_, err := os.Stat(local)
+		if !os.IsNotExist(err) {
 			t.Error("AppData/Local/JetBrains should be removed")
 		}
 	})
 }
 
 func TestResetWindowsMissingDirs(t *testing.T) {
-	// Reset on an empty home directory must not crash
-	// (os.RemoveAll on nonexistent path is a no-op; cleanRegistry silently fails)
-	Reset(t.TempDir(), []string{"IntelliJIdea", "GoLand"})
+	reset.Reset(t.TempDir(), []string{"IntelliJIdea", "GoLand"})
 }
