@@ -1,3 +1,5 @@
+//go:build windows
+
 package scheduler
 
 import (
@@ -8,10 +10,10 @@ import (
 
 const appName = "JetReset"
 
-func startWindowsScheduler(e string) {
+func Schedule(processName string) {
 	err := exec.Command("schtasks",
 		"/create", "/tn", appName,
-		"/tr", `"`+e+`"`,
+		"/tr", `"`+processName+`"`,
 		"/sc", "MONTHLY", "/f",
 	).Run()
 	if err != nil {
@@ -19,10 +21,9 @@ func startWindowsScheduler(e string) {
 		return
 	}
 	fmt.Println("Scheduled: Task Scheduler (monthly)")
-
 }
 
-func stopWindowsScheduler() {
+func Unschedule(_ string) {
 	exec.Command("schtasks", "/delete", "/tn", appName, "/f").Run()
 	fmt.Println("Task Scheduler entry removed.")
 }
