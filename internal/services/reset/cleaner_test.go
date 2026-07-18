@@ -1,10 +1,12 @@
-package reset
+package reset_test
 
 import (
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/insigmo/jetreset/internal/services/reset"
 )
 
 func TestRemoveLine(t *testing.T) {
@@ -17,9 +19,9 @@ func TestRemoveLine(t *testing.T) {
 			`  <property name="keep.this" value="yes"/>`,
 			`</application>`,
 		}, "\n")
-		os.WriteFile(f, []byte(content), 0644)
+		_ = os.WriteFile(f, []byte(content), 0o644)
 
-		removeLine(f, evlRe)
+		reset.RemoveLine(f, reset.EvlRe)
 
 		got, _ := os.ReadFile(f)
 		if strings.Contains(string(got), "evlsprt") {
@@ -33,10 +35,10 @@ func TestRemoveLine(t *testing.T) {
 	t.Run("does not modify file when no match", func(t *testing.T) {
 		f := filepath.Join(t.TempDir(), "other.xml")
 		content := `<property name="keep.this" value="yes"/>`
-		os.WriteFile(f, []byte(content), 0644)
+		_ = os.WriteFile(f, []byte(content), 0o644)
 
 		info1, _ := os.Stat(f)
-		removeLine(f, evlRe)
+		reset.RemoveLine(f, reset.EvlRe)
 		info2, _ := os.Stat(f)
 
 		if !info1.ModTime().Equal(info2.ModTime()) {
@@ -45,7 +47,7 @@ func TestRemoveLine(t *testing.T) {
 	})
 
 	t.Run("silently handles missing file", func(t *testing.T) {
-		removeLine(filepath.Join(t.TempDir(), "nonexistent.xml"), evlRe)
+		reset.RemoveLine(filepath.Join(t.TempDir(), "nonexistent.xml"), reset.EvlRe)
 	})
 }
 
@@ -55,22 +57,23 @@ func TestCleanDir(t *testing.T) {
 
 	for _, name := range []string{"IntelliJIdea2024.1", "GoLand2023.3"} {
 		dir := filepath.Join(base, name)
-		os.MkdirAll(filepath.Join(dir, "eval"), 0755)
-		os.MkdirAll(filepath.Join(dir, "options"), 0755)
+		_ = os.MkdirAll(filepath.Join(dir, "eval"), 0o755)
+		_ = os.MkdirAll(filepath.Join(dir, "options"), 0o755)
 
 		otherXML := filepath.Join(dir, "options", "other.xml")
-		os.WriteFile(otherXML, []byte(strings.Join([]string{
+		_ = os.WriteFile(otherXML, []byte(strings.Join([]string{
 			`<application>`,
 			`  <property name="evlsprtInExpiration" value="9999"/>`,
 			`  <property name="keep.this" value="yes"/>`,
 			`</application>`,
-		}, "\n")), 0644)
+		}, "\n")), 0o644)
 	}
 
-	cleanDir(base, products)
+	reset.CleanDir(base, products)
 
 	for _, name := range []string{"IntelliJIdea2024.1", "GoLand2023.3"} {
-		if _, err := os.Stat(filepath.Join(base, name, "eval")); !os.IsNotExist(err) {
+		_, err := os.Stat(filepath.Join(base, name, "eval"))
+		if !os.IsNotExist(err) {
 			t.Errorf("%s/eval/ should be removed", name)
 		}
 		got, _ := os.ReadFile(filepath.Join(base, name, "options", "other.xml"))
@@ -86,15 +89,16 @@ func TestCleanDir(t *testing.T) {
 func TestCleanDirIgnoresUnrelatedProducts(t *testing.T) {
 	base := t.TempDir()
 	evalDir := filepath.Join(base, "SomeOtherApp2024", "eval")
-	os.MkdirAll(evalDir, 0755)
+	_ = os.MkdirAll(evalDir, 0o755)
 
-	cleanDir(base, []string{"IntelliJIdea", "GoLand"})
+	reset.CleanDir(base, []string{"IntelliJIdea", "GoLand"})
 
-	if _, err := os.Stat(evalDir); os.IsNotExist(err) {
+	_, err := os.Stat(evalDir)
+	if os.IsNotExist(err) {
 		t.Error("eval/ of unrelated product should not be removed")
 	}
 }
 
 func TestCleanDirMissingBaseDir(t *testing.T) {
-	cleanDir(filepath.Join(t.TempDir(), "nonexistent"), []string{"IntelliJIdea"})
+	reset.CleanDir(filepath.Join(t.TempDir(), "nonexistent"), []string{"IntelliJIdea"})
 }
