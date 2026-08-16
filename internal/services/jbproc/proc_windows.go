@@ -37,7 +37,7 @@ func taskkill(p Proc, force bool) error {
 }
 
 // Kill gracefully closes the IDE (and its child JVM tree) via taskkill /T.
-func Kill(p Proc) error { return taskkill(p, false) }
+func Kill(p Proc) error { return taskkill(p, true) }
 
 // ForceKill force-terminates the process tree after a graceful close timed out.
 func ForceKill(p Proc) error { return taskkill(p, true) }
